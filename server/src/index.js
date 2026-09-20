@@ -71,9 +71,38 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
+async function waitForSchema() {
+  const retries = Number(process.env.DB_CONNECT_RETRIES || 20);
+  const delayMs = Number(process.env.DB_CONNECT_DELAY_MS || 2000);
+  let lastErr;
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      await initSchema();
+      return;
+    } catch (err) {
+      lastErr = err;
+      console.error(`PostgreSQL not ready (${attempt}/${retries}): ${err.message}`);
+      if (attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+  }
+  throw lastErr;
+}
+
 async function start() {
   try {
-    await initSchema();
+    await waitForSchema();
+    if (process.env.SEED_ON_START === 'true') {
+      const { spawnSync } = await import('child_process');
+      const result = spawnSync(process.execPath, [path.join(__dirname, 'seed.js')], {
+        stdio: 'inherit',
+        env: process.env,
+      });
+      if (result.status !== 0) {
+        console.warn('Seed step failed; API will still start.');
+      }
+    }
     const db = await testConnection();
     console.log(`PostgreSQL connected: ${db.db}`);
     const HOST = process.env.HOST || '0.0.0.0';
@@ -94,11 +123,8 @@ async function start() {
   } catch (err) {
     console.error('Failed to start API — PostgreSQL not available.');
     console.error(err.message);
-    console.error('\nSetup steps:');
-    console.error('  1. Install PostgreSQL locally');
-    console.error('  2. cd server && npm run db:setup');
-    console.error('  3. Copy .env.example to .env');
-    console.error('  4. npm run seed && npm start');
+    console.error('\nStart the Docker stack (database runs inside Docker, no password needed):');
+    console.error('  docker compose up --build');
     process.exit(1);
   }
 }

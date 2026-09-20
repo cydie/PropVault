@@ -1,0 +1,17 @@
+node_modules
+server/node_modules
+server/.env
+.git
+.gitignore
+dist
+*.log
+*.dump
+aims
+docs
+electron
+guidelines
+.env
+docker-compose*.yml
+README.md
+CADASTRAL_GIS.md
+ATTRIBUTIONS.md

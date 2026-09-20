@@ -21,7 +21,7 @@ const { Pool } = pg;
 
 const connectionString =
   process.env.DATABASE_URL ||
-  'postgresql://propvault:propvault@localhost:5432/propvault';
+  'postgresql://propvault:propvault@db:5432/propvault';
 
 export const pool = new Pool({
   connectionString,

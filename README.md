@@ -8,7 +8,7 @@ Municipal Assessor Information System for the **Municipality of Rizal, Palawan**
 |--------|------------|
 | **Frontend** | React 18, Vite, Tailwind CSS, shadcn/ui, Recharts |
 | **API** | Node.js, Express, JWT auth |
-| **Database** | **PostgreSQL** (local) — scalable, supports many users and concurrent access |
+| **Database** | **PostgreSQL + PostGIS in Docker** — the app connects automatically; you never enter a database password |
 | **Desktop** | Electron (wraps the same web UI + local API) |
 
 Bootstrap 5 is loaded for extra responsive utilities; primary styling uses Tailwind.
@@ -22,80 +22,47 @@ Bootstrap 5 is loaded for extra responsive utilities; primary styling uses Tailw
 - Notifications, audit trail, GIS map view, printable reports
 - Settings: barangays, classifications, assessment levels, backup
 
-## PostgreSQL setup (local PC — Windows)
+## Quick start (Docker)
 
-### 1. Install PostgreSQL
-
-Download and install from [postgresql.org](https://www.postgresql.org/download/windows/) (PostgreSQL 16+ recommended).
-
-During install, note the **postgres** superuser password.
-
-### 2. Create PropVault database
+Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) and start it. You do **not** install PostgreSQL on Windows, and you do **not** type a database password.
 
 ```powershell
-cd server
+docker compose up --build
+```
+
+Then open **http://localhost:8081**
+
+| Service | How you use it |
+|---------|----------------|
+| Web | http://localhost:8081 |
+| API | http://localhost:8081/api/health (proxied) or http://localhost:3001/api/health |
+| Database | Inside Docker only. The API container connects by itself. |
+
+Demo accounts are seeded on first start. Stop with `docker compose down`. Data stays in the Docker volume; add `-v` only if you want to wipe the database.
+
+To change the web/API host ports, copy `.env.example` to `.env`. That file is optional.
+
+## Local UI development (optional)
+
+The database still runs in Docker. Do not install PostgreSQL on the PC.
+
+```powershell
+docker compose up --build
 npm install
-npm run db:setup
+npm run dev
 ```
 
-If your postgres password is not `postgres`, set it first:
-
-```powershell
-$env:PG_ADMIN_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/postgres"
-npm run db:setup
-```
-
-This creates:
-- Database: `propvault`
-- User: `propvault` / password: `propvault`
-
-### 3. Configure connection
-
-Copy `server/.env.example` to `server/.env` (or edit the existing file):
-
-```
-DATABASE_URL=postgresql://propvault:propvault@localhost:5432/propvault
-PORT=3001
-JWT_SECRET=propvault-dev-secret-change-in-production
-```
-
-### 4. Seed demo data
-
-```powershell
-npm run seed
-```
-
-## Quick start
-
-### Install all dependencies
-
-```bash
-npm install
-```
-
-### Run API + web
-
-```bash
-npm run dev:all
-```
-
-- Web: http://localhost:5173  
-- API: http://localhost:3001/api/health  
-
-### Desktop app
-
-```bash
-npm run desktop
-```
+Vite: http://localhost:5173 (proxies `/api` to the Docker API on port 3001).
 
 ## Demo accounts
 
 | Username | Password | Role |
 |----------|----------|------|
 | `sysadmin` | `Admin@2024` | Admin |
-| `p.villanueva` | `Assessor@2024` | Provincial Assessor |
-| `a.macaraeg` | `Staff@2024` | Staff |
-| `mc.santos.own` | `Owner@2024` | Property Owner |
+| `m.santos` | `Treasury@2024` | Treasury |
+| `a.macaraeg` | `Staff@2024` | Staff Assessor |
+| `c.tamayo` | `Staff@2024` | Staff Assessor |
+| `it.support` | `IT@2024` | IT |
 
 ## API overview
 
@@ -110,29 +77,37 @@ Base URL: `/api` (proxied in dev)
 - `GET /audit` — audit trail (Admin)
 - `GET|POST /settings/*` — system settings
 
-## Production build
+## Production / always-on
 
-```bash
-npm run build
-cd server && npm start
-# Serve dist/ with any static host; set VITE_API_URL to your API origin
+Keep Docker Desktop running. Containers restart on their own (`restart: unless-stopped`).
+
+```powershell
+docker compose up --build -d
+```
+
+Desktop app (optional, still uses the Docker API):
+
+```powershell
+npm run desktop
 ```
 
 ## Database backup
 
-Use PostgreSQL tools:
+Postgres lives in Docker. Backup from the container (no host password):
 
 ```powershell
-pg_dump -U propvault -d propvault -F c -f propvault_backup.dump
+docker compose exec db pg_dump -U propvault -d propvault -F c -f /tmp/propvault.dump
+docker compose cp db:/tmp/propvault.dump .\propvault_backup.dump
 ```
 
 Restore:
 
 ```powershell
-pg_restore -U propvault -d propvault -c propvault_backup.dump
+docker compose cp .\propvault_backup.dump db:/tmp/propvault.dump
+docker compose exec db pg_restore -U propvault -d propvault -c /tmp/propvault.dump
 ```
 
-To reset demo data: drop and recreate the database, then run `npm run db:setup` and `npm run seed`.
+To wipe and reseed: `docker compose down -v` then `docker compose up --build`.
 
 ## License
 

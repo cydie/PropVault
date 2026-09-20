@@ -22,6 +22,10 @@
     "db:backup-local": "npm run db:backup-local --prefix server",
     "db:enable-postgis": "npm run db:enable-postgis --prefix server",
     "db:check-postgis": "npm run db:check-postgis --prefix server",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "docker:seed": "docker compose exec api node src/seed.js",
     "postinstall": "npm install --prefix server"
   },
   "dependencies": {

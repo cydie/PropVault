@@ -87,17 +87,11 @@ Click a parcel → **Generate printable report** → opens HTML with north arrow
 ## Setup
 
 ```powershell
-# 1. Recreate DB with PostGIS (first time or migration)
-cd ResQTracking
-docker compose down
-docker compose up db -d
-
-# 2. Start API (applies schema-cadastral.sql on boot)
-npm run dev:api
-
-# 3. Start web
-npm run dev
+# Full stack — Postgres stays inside Docker (no local DB password)
+docker compose up --build
 ```
+
+Open http://localhost:8081 and use **Cadastral GIS** from the sidebar.
 
 Open **Cadastral GIS** from the sidebar.
 
