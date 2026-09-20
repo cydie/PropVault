@@ -209,15 +209,12 @@ export async function initSchema() {
     CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id);
     CREATE INDEX IF NOT EXISTS idx_audit_time ON audit_logs(time DESC);
 
-    ALTER TABLE land_properties ADD COLUMN IF NOT EXISTS remarks TEXT;
-    ALTER TABLE building_properties ADD COLUMN IF NOT EXISTS remarks TEXT;
-    ALTER TABLE tax_payments ADD COLUMN IF NOT EXISTS pin TEXT NOT NULL DEFAULT '';
-
     CREATE TABLE IF NOT EXISTS tax_payments (
       id TEXT PRIMARY KEY,
       property_id TEXT,
       owner TEXT NOT NULL,
       td TEXT,
+      pin TEXT NOT NULL DEFAULT '',
       amount TEXT NOT NULL,
       tax_year TEXT NOT NULL,
       payment_date TEXT,
@@ -228,6 +225,10 @@ export async function initSchema() {
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW()
     );
+
+    ALTER TABLE land_properties ADD COLUMN IF NOT EXISTS remarks TEXT;
+    ALTER TABLE building_properties ADD COLUMN IF NOT EXISTS remarks TEXT;
+    ALTER TABLE tax_payments ADD COLUMN IF NOT EXISTS pin TEXT NOT NULL DEFAULT '';
 
     CREATE INDEX IF NOT EXISTS idx_payments_status ON tax_payments(status);
     CREATE INDEX IF NOT EXISTS idx_payments_owner ON tax_payments(owner);

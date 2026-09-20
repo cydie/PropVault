@@ -148,7 +148,7 @@ function LoginPage() {
   return (
     <>
     <ForgotPasswordDialog open={forgotOpen} onClose={() => setForgotOpen(false)} />
-    <div className="min-h-screen flex items-center justify-center bg-[#061526] relative overflow-hidden px-4 py-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#061526] relative overflow-hidden px-4 py-8">
       {/* Background geometric pattern */}
       <div
         className="absolute inset-0 opacity-[0.04]"
@@ -160,27 +160,25 @@ function LoginPage() {
       <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2" />
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-800/10 rounded-full blur-[100px] translate-x-1/3 translate-y-1/3" />
 
-      <div className="relative w-full max-w-[420px]">
-        {/* Header */}
-        <div className="flex flex-col items-center mb-7">
-          <div className="flex items-center gap-4">
-            <ImageWithFallback
-              src={rizalLogo}
-              alt="Municipality of Rizal, Palawan Official Seal"
-              className="w-[68px] h-[68px] object-contain drop-shadow-lg"
-            />
-            <div>
-              <p className="text-blue-300/70 text-[10px] font-semibold uppercase tracking-[0.15em]">
-                Republic of the Philippines
-              </p>
-              <p className="text-white font-semibold text-base leading-tight">
-                Municipality of Rizal, Palawan
-              </p>
-              <p className="text-blue-300/60 text-xs">Municipal Assessor's Office</p>
-            </div>
+      <div className="relative z-10 flex flex-col items-center w-full">
+        <header className="flex items-center justify-center gap-4 mb-7">
+          <ImageWithFallback
+            src={rizalLogo}
+            alt="Municipality of Rizal, Palawan Official Seal"
+            className="w-[72px] h-[72px] object-contain drop-shadow-lg shrink-0"
+          />
+          <div>
+            <p className="text-[#7eb6e8] text-[11px] font-semibold uppercase tracking-[0.18em] leading-none mb-1">
+              Republic of the Philippines
+            </p>
+            <p className="text-white font-semibold text-[22px] leading-tight">
+              Municipality of Rizal, Palawan
+            </p>
+            <p className="text-[#7eb6e8]/90 text-sm mt-0.5">Municipal Assessor's Office</p>
           </div>
-        </div>
+        </header>
 
+        <div className="w-full max-w-[420px]">
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-white/5">
           <div className="bg-[#1e3a8a] px-7 py-5 text-center">
@@ -308,6 +306,7 @@ function LoginPage() {
           © 2024 Municipality of Rizal, Palawan · All rights reserved
         </p>
       </div>
+      </div>
     </div>
     </>
   );
@@ -432,12 +431,6 @@ function Sidebar({
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
   const navGroups = getNavGroupsForRole(userRole);
 
-  const getInitials = (name: string) => {
-    const parts = name.split(" ");
-    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    return name.substring(0, 2).toUpperCase();
-  };
-
   function NavItem({ item }: { item: { id: View; label: string; icon: React.ComponentType<{ size?: number; className?: string }> } }) {
     const Icon = item.icon;
     const active = activeView === item.id;
@@ -519,9 +512,11 @@ function Sidebar({
 
       {/* Footer */}
       <div className={`border-t border-sidebar-border px-3 py-3 flex items-center gap-3 ${collapsed ? "justify-center" : ""}`}>
-        <div className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center text-white text-xs font-bold shrink-0">
-          {getInitials(userName)}
-        </div>
+        <ImageWithFallback
+          src={rizalLogo}
+          alt="Municipality of Rizal seal"
+          className="w-8 h-8 rounded-full object-contain bg-white shrink-0"
+        />
         {!collapsed && (
           <div className="flex-1 overflow-hidden">
             <p className="text-sidebar-foreground text-xs font-semibold truncate">{userName}</p>
@@ -618,17 +613,6 @@ function TopNav({
     }
     setQuickSearch("");
   }
-
-  // Generate initials from userName
-  const getInitials = (name: string) => {
-    const parts = name.split(" ");
-    if (parts.length >= 2) {
-      return parts[0][0] + parts[parts.length - 1][0];
-    }
-    return name.substring(0, 2);
-  };
-
-  const initials = getInitials(userName).toUpperCase();
 
   return (
     <header className="bg-card border-b border-border px-4 md:px-6 h-14 flex items-center gap-4 sticky top-0 shrink-0">
@@ -764,9 +748,11 @@ function TopNav({
           onClick={onProfileToggle}
           className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-lg hover:bg-secondary transition-all"
         >
-          <div className="w-7 h-7 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white text-xs font-bold">
-            {initials}
-          </div>
+          <ImageWithFallback
+            src={rizalLogo}
+            alt="Municipality of Rizal seal"
+            className="w-7 h-7 rounded-full object-contain bg-white ring-1 ring-black/10"
+          />
           <span className="hidden md:block text-sm font-medium text-foreground">{userRole}</span>
           <ChevronDown size={13} className="hidden md:block text-muted-foreground" />
         </button>
