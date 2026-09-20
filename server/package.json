@@ -1,0 +1,32 @@
+{
+  "name": "propvault-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/free-port.js && node --watch src/index.js",
+    "start": "node src/index.js",
+    "seed": "node src/seed.js",
+    "db:setup": "node scripts/setup-db.js",
+    "db:clear-records": "node scripts/clear-records.js",
+    "db:sync-barangays": "node scripts/sync-barangays.js",
+    "db:sync-demo-users": "node scripts/sync-demo-users.js",
+    "db:setup-local": "node scripts/setup-local-db.js",
+    "db:init-local": "node scripts/init-local-db.js",
+    "db:backup": "node scripts/backup-db.js",
+    "db:backup-local": "node scripts/backup-db.js --local",
+    "db:enable-postgis": "node scripts/enable-postgis.js",
+    "db:check-postgis": "node scripts/check-postgis.js"
+  },
+  "dependencies": {
+    "@getbrevo/brevo": "^5.0.4",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^8.0.11",
+    "pg": "^8.13.3",
+    "uuid": "^11.0.5"
+  }
+}

@@ -1,0 +1,9 @@
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+
+/* Leaflet marker wrapper — hide default divIcon box */
+.propvault-marker {
+  background: transparent !important;
+  border: none !important;
+}

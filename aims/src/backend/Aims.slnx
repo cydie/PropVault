@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Aims.Api/Aims.Api.csproj" />
+  <Project Path="Aims.Application/Aims.Application.csproj" />
+  <Project Path="Aims.Contracts/Aims.Contracts.csproj" />
+  <Project Path="Aims.Domain/Aims.Domain.csproj" />
+  <Project Path="Aims.Infrastructure/Aims.Infrastructure.csproj" />
+</Solution>
